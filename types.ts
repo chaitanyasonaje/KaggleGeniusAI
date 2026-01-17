@@ -1,4 +1,9 @@
 
+export interface User {
+  name: string;
+  email: string;
+}
+
 export interface DatasetColumn {
   name: string;
   type: 'numeric' | 'categorical' | 'datetime' | 'text' | 'unknown';
@@ -52,13 +57,12 @@ export interface DatasetAnalysis {
     importance: 'high' | 'medium' | 'low';
   }[];
   baselineNotebook: string;
-  // New features
   simulatedTraining: {
     logs: TrainingLog[];
     finalMetricScore: number;
     featureImportance: { feature: string; importance: number }[];
-    confusionMatrix?: number[][]; // For classification
-    residuals?: { predicted: number; actual: number }[]; // For regression
+    confusionMatrix?: number[][];
+    residuals?: { predicted: number; actual: number }[];
   };
   correlations: {
     x: string;

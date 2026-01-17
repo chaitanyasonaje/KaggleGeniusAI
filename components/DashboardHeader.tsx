@@ -1,7 +1,13 @@
 
 import React from 'react';
+import { User } from '../types';
 
-const DashboardHeader: React.FC = () => {
+interface DashboardHeaderProps {
+  user: User | null;
+  onLogout: () => void;
+}
+
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ user, onLogout }) => {
   return (
     <header className="border-b border-[#30363d] bg-[#0d1117] sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
       <div className="flex items-center space-x-3">
@@ -12,14 +18,24 @@ const DashboardHeader: React.FC = () => {
         </div>
         <div>
           <h1 className="text-xl font-bold tracking-tight">KaggleGenius <span className="text-blue-500 font-light">AI</span></h1>
-          <p className="text-xs text-gray-400">Next-Gen ML Dataset Analyzer</p>
+          <p className="text-xs text-gray-400">Welcome, {user?.name || 'Grandmaster'}</p>
         </div>
       </div>
       <div className="flex items-center space-x-4">
-        <span className="text-xs bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-1 rounded-full flex items-center">
+        <span className="text-xs bg-green-500/10 text-green-400 border border-green-500/20 px-3 py-1 rounded-full flex items-center">
           <span className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-          Gemini 3 Pro Active
+          Flash 3.0 Core
         </span>
+        <div className="h-6 w-[1px] bg-[#30363d] mx-2" />
+        <button 
+          onClick={onLogout}
+          className="text-xs text-gray-500 hover:text-white transition-colors flex items-center group"
+        >
+          <svg className="w-4 h-4 mr-2 group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Sign Out
+        </button>
       </div>
     </header>
   );

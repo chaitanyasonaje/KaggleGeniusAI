@@ -3,11 +3,10 @@ import { GoogleGenAI, Type, Chat } from "@google/genai";
 import { DatasetAnalysis, DatasetColumn } from "../types";
 
 export class GeminiService {
-  private ai: GoogleGenAI;
   private chatInstance: Chat | null = null;
 
   constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+    // Client initialization moved to methods to ensure fresh API key usage
   }
 
   async analyzeDataset(
@@ -15,7 +14,10 @@ export class GeminiService {
     rowCount: number,
     sampleRows: any[]
   ): Promise<DatasetAnalysis> {
-    // Using gemini-3-flash-preview for significantly lower latency
+    // Create a fresh instance of GoogleGenAI right before the API call to use the latest API_KEY
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    
+    // Using gemini-3-pro-preview for complex reasoning, feature engineering design, and code generation
     const prompt = `
       You are a world-class Kaggle Grandmaster AI Assistant. 
       Analyze the following dataset metadata and suggest the best ML strategy.
@@ -43,12 +45,12 @@ export class GeminiService {
       10. correlations: Array of objects (x, y, value) showing relationships between important features.
     `;
 
-    const response = await this.ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+    const response = await ai.models.generateContent({
+      model: "gemini-3-pro-preview",
       contents: prompt,
       config: {
-        // Disabling thinking to prioritize speed/latency as requested
-        thinkingConfig: { thinkingBudget: 0 },
+        // High complexity task, allowing the model to think with max budget for gemini-3-pro-preview
+        thinkingConfig: { thinkingBudget: 32768 },
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -172,7 +174,8 @@ export class GeminiService {
 
     try {
       const data = JSON.parse(response.text) as DatasetAnalysis;
-      this.chatInstance = this.ai.chats.create({
+      // Initialize chat with gemini-3-flash-preview for low-latency follow-up discussions
+      this.chatInstance = ai.chats.create({
         model: 'gemini-3-flash-preview',
         config: {
           systemInstruction: `You are a Kaggle Grandmaster assistant. You have already analyzed the user's dataset and provided a report. 
@@ -192,6 +195,7 @@ export class GeminiService {
       throw new Error("Analysis must be performed before chatting.");
     }
     const response = await this.chatInstance.sendMessage({ message });
+    // Use .text property directly as per guidelines
     return response.text || "I'm sorry, I couldn't generate a response.";
   }
 }
