@@ -1,0 +1,5 @@
+{
+  "name": "KaggleGenius - AI Data Science Assistant",
+  "description": "An intelligent ML companion that analyzes datasets, suggests feature engineering strategies, recommends optimal models, and generates complete baseline notebooks for Kaggle competitions.",
+  "requestFramePermissions": []
+}
